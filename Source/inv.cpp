@@ -358,11 +358,9 @@ void DrawInv()
 		}
 
 		if (plr[myplr].InvBody[INVLOC_HAND_LEFT]._iLoc == ILOC_TWOHAND) {
-#ifdef HELLFIRE
 			if (plr[myplr]._pClass != PC_BARBARIAN
 			    || plr[myplr].InvBody[INVLOC_HAND_LEFT]._itype != ITYPE_SWORD
 			        && plr[myplr].InvBody[INVLOC_HAND_LEFT]._itype != ITYPE_MACE) {
-#endif
 				InvDrawSlotBack(RIGHT_PANEL_X + 248, 160 + SCREEN_Y, 2 * INV_SLOT_SIZE_PX, 3 * INV_SLOT_SIZE_PX);
 				light_table_index = 0;
 				cel_transparency_active = TRUE;
@@ -377,9 +375,7 @@ void DrawInv()
 				}
 
 				cel_transparency_active = FALSE;
-#ifdef HELLFIRE
 			}
-#endif
 		}
 	}
 	if (plr[myplr].InvBody[INVLOC_HAND_RIGHT]._itype != ITYPE_NONE) {
@@ -707,84 +703,21 @@ BOOL SpecialAutoPlace(int pnum, int ii, int sx, int sy, BOOL saveflag)
 	return done;
 }
 
-#ifndef HELLFIRE
-BOOL GoldAutoPlace(int pnum)
-{
-	BOOL done;
-	int i, ii;
-	int xx, yy;
-
-	done = FALSE;
-	for (i = 0; i < plr[pnum]._pNumInv && !done; i++) {
-		if (plr[pnum].InvList[i]._itype == ITYPE_GOLD) {
-			if (plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue <= GOLD_MAX_LIMIT) {
-				plr[pnum].InvList[i]._ivalue = plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue;
-				if (plr[pnum].InvList[i]._ivalue >= GOLD_MEDIUM_LIMIT)
-					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_LARGE;
-				else if (plr[pnum].InvList[i]._ivalue <= GOLD_SMALL_LIMIT)
-					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_SMALL;
-				else
-					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_MEDIUM;
-				plr[pnum]._pGold = CalculateGold(pnum);
-				done = TRUE;
-			}
-		}
-	}
-	if (done)
-		return done;
-
-	for (i = 0; i < plr[pnum]._pNumInv && !done; i++) {
-		if (plr[pnum].InvList[i]._itype == ITYPE_GOLD && plr[pnum].InvList[i]._ivalue < GOLD_MAX_LIMIT) {
-			if (plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue <= GOLD_MAX_LIMIT) {
-				plr[pnum].InvList[i]._ivalue = plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue;
-				if (plr[pnum].InvList[i]._ivalue >= GOLD_MEDIUM_LIMIT)
-					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_LARGE;
-				else if (plr[pnum].InvList[i]._ivalue <= GOLD_SMALL_LIMIT)
-					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_SMALL;
-				else
-					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_MEDIUM;
-				plr[pnum]._pGold = CalculateGold(pnum);
-				done = TRUE;
-			}
-		}
-	}
-	if (done)
-		return done;
-
-	for (i = 39; i >= 0 && !done; i--) {
-		yy = 10 * (i / 10);
-		xx = i % 10;
-		if (plr[pnum].InvGrid[xx + yy] == 0) {
-			ii = plr[pnum]._pNumInv;
-			plr[pnum].InvList[ii] = plr[pnum].HoldItem;
-			plr[pnum]._pNumInv = plr[pnum]._pNumInv + 1;
-			plr[pnum].InvGrid[xx + yy] = plr[pnum]._pNumInv;
-			if (plr[pnum].HoldItem._ivalue >= GOLD_MEDIUM_LIMIT)
-				plr[pnum].InvList[ii]._iCurs = ICURS_GOLD_LARGE;
-			else if (plr[pnum].HoldItem._ivalue <= GOLD_SMALL_LIMIT)
-				plr[pnum].InvList[ii]._iCurs = ICURS_GOLD_SMALL;
-			else
-				plr[pnum].InvList[ii]._iCurs = ICURS_GOLD_MEDIUM;
-			plr[pnum]._pGold = CalculateGold(pnum);
-			done = TRUE;
-		}
-	}
-
-	return done;
-}
-#else
 BOOL GoldAutoPlace(int pnum)
 {
 	int ii;
 	int xx, yy;
-	int max_gold, gold;
 	BOOL done;
 
 	done = FALSE;
 	for (int i = 0; i < plr[pnum]._pNumInv && !done; i++) {
 		if (plr[pnum].InvList[i]._itype == ITYPE_GOLD) {
-			gold = plr[pnum].InvList[i]._ivalue + plr[pnum].HoldItem._ivalue;
+			int gold = plr[pnum].InvList[i]._ivalue + plr[pnum].HoldItem._ivalue;
+#ifdef HELLFIRE
 			if (gold <= MaxGold) {
+#else
+			if (plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue <= GOLD_MAX_LIMIT) {
+#endif
 				plr[pnum].InvList[i]._ivalue = gold;
 				if (gold >= GOLD_MEDIUM_LIMIT)
 					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_LARGE;
@@ -794,11 +727,12 @@ BOOL GoldAutoPlace(int pnum)
 					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_MEDIUM;
 				plr[pnum]._pGold = CalculateGold(pnum);
 				done = TRUE;
+#ifdef HELLFIRE
 				plr[pnum].HoldItem._ivalue = 0;
 			} else {
-				max_gold = MaxGold;
+				int max_gold = MaxGold;
 				if (plr[pnum].InvList[i]._ivalue < max_gold) {
-					gold = max_gold - plr[pnum].InvList[i]._ivalue;
+					int gold = max_gold - plr[pnum].InvList[i]._ivalue;
 					plr[pnum].InvList[i]._ivalue = max_gold;
 					plr[pnum].InvList[i]._iCurs = ICURS_GOLD_LARGE;
 					plr[pnum].HoldItem._ivalue -= gold;
@@ -810,9 +744,30 @@ BOOL GoldAutoPlace(int pnum)
 					control_set_gold_curs(pnum);
 					plr[pnum]._pGold = CalculateGold(pnum);
 				}
+#endif
 			}
 		}
 	}
+
+#ifndef HELLFIRE
+	if (!done)
+		for (int i = 0; i < plr[pnum]._pNumInv && !done; i++) {
+			if (plr[pnum].InvList[i]._itype == ITYPE_GOLD && plr[pnum].InvList[i]._ivalue < GOLD_MAX_LIMIT) {
+				if (plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue <= GOLD_MAX_LIMIT) {
+					plr[pnum].InvList[i]._ivalue = plr[pnum].HoldItem._ivalue + plr[pnum].InvList[i]._ivalue;
+					if (plr[pnum].InvList[i]._ivalue >= GOLD_MEDIUM_LIMIT)
+						plr[pnum].InvList[i]._iCurs = ICURS_GOLD_LARGE;
+					else if (plr[pnum].InvList[i]._ivalue <= GOLD_SMALL_LIMIT)
+						plr[pnum].InvList[i]._iCurs = ICURS_GOLD_SMALL;
+					else
+						plr[pnum].InvList[i]._iCurs = ICURS_GOLD_MEDIUM;
+					plr[pnum]._pGold = CalculateGold(pnum);
+					done = TRUE;
+				}
+			}
+		}
+#endif
+
 	if (!done)
 		for (int i = 39; i >= 0 && !done; i--) {
 			yy = 10 * (i / 10);
@@ -828,8 +783,8 @@ BOOL GoldAutoPlace(int pnum)
 					plr[pnum].InvList[ii]._iCurs = ICURS_GOLD_SMALL;
 				else
 					plr[pnum].InvList[ii]._iCurs = ICURS_GOLD_MEDIUM;
-
-				gold = plr[pnum].HoldItem._ivalue;
+#ifdef HELLFIRE
+				int gold = plr[pnum].HoldItem._ivalue;
 				if (gold > MaxGold) {
 					gold -= MaxGold;
 					plr[pnum].HoldItem._ivalue = gold;
@@ -841,11 +796,15 @@ BOOL GoldAutoPlace(int pnum)
 					plr[pnum]._pGold = CalculateGold(pnum);
 					SetCursor_(CURSOR_HAND);
 				}
+#else
+				plr[pnum]._pGold = CalculateGold(pnum);
+				done = TRUE;
+#endif
 			}
 		}
+
 	return done;
 }
-#endif
 
 BOOL WeaponAutoPlace(int pnum)
 {
@@ -1074,10 +1033,7 @@ void CheckInvPaste(int pnum, int mx, int my)
 		if (r <= SLOTXY_HAND_LEFT_LAST) {
 			if (plr[pnum].InvBody[INVLOC_HAND_LEFT]._itype == ITYPE_NONE) {
 				if ((plr[pnum].InvBody[INVLOC_HAND_RIGHT]._itype == ITYPE_NONE || plr[pnum].InvBody[INVLOC_HAND_RIGHT]._iClass != plr[pnum].HoldItem._iClass)
-#ifdef HELLFIRE
-				    || (plr[pnum]._pClass == PC_BARD && plr[pnum].InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && plr[pnum].HoldItem._iClass == ICLASS_WEAPON)
-#endif
-				) {
+				    || (plr[pnum]._pClass == PC_BARD && plr[pnum].InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && plr[pnum].HoldItem._iClass == ICLASS_WEAPON)) {
 					NetSendCmdChItem(FALSE, INVLOC_HAND_LEFT);
 					plr[pnum].InvBody[INVLOC_HAND_LEFT] = plr[pnum].HoldItem;
 				} else {
@@ -1087,10 +1043,7 @@ void CheckInvPaste(int pnum, int mx, int my)
 				break;
 			}
 			if ((plr[pnum].InvBody[INVLOC_HAND_RIGHT]._itype == ITYPE_NONE || plr[pnum].InvBody[INVLOC_HAND_RIGHT]._iClass != plr[pnum].HoldItem._iClass)
-#ifdef HELLFIRE
-			    || (plr[pnum]._pClass == PC_BARD && plr[pnum].InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && plr[pnum].HoldItem._iClass == ICLASS_WEAPON)
-#endif
-			) {
+			    || (plr[pnum]._pClass == PC_BARD && plr[pnum].InvBody[INVLOC_HAND_RIGHT]._iClass == ICLASS_WEAPON && plr[pnum].HoldItem._iClass == ICLASS_WEAPON)) {
 				NetSendCmdChItem(FALSE, INVLOC_HAND_LEFT);
 				cn = SwapItem(&plr[pnum].InvBody[INVLOC_HAND_LEFT], &plr[pnum].HoldItem);
 				break;
@@ -1125,10 +1078,7 @@ void CheckInvPaste(int pnum, int mx, int my)
 		}
 
 		if ((plr[pnum].InvBody[INVLOC_HAND_LEFT]._itype != ITYPE_NONE && plr[pnum].InvBody[INVLOC_HAND_LEFT]._iClass == plr[pnum].HoldItem._iClass)
-#ifdef HELLFIRE
-		    && !(plr[pnum]._pClass == PC_BARD && plr[pnum].InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && plr[pnum].HoldItem._iClass == ICLASS_WEAPON)
-#endif
-		) {
+		    && !(plr[pnum]._pClass == PC_BARD && plr[pnum].InvBody[INVLOC_HAND_LEFT]._iClass == ICLASS_WEAPON && plr[pnum].HoldItem._iClass == ICLASS_WEAPON)) {
 			NetSendCmdChItem(FALSE, INVLOC_HAND_LEFT);
 			cn = SwapItem(&plr[pnum].InvBody[INVLOC_HAND_LEFT], &plr[pnum].HoldItem);
 			break;
@@ -1800,9 +1750,7 @@ void CheckQuestItem(int pnum)
 void InvGetItem(int pnum, int ii)
 {
 	int i;
-#ifdef HELLFIRE
 	BOOL cursor_updated;
-#endif
 
 	if (dropGoldFlag) {
 		dropGoldFlag = FALSE;
@@ -1820,13 +1768,12 @@ void InvGetItem(int pnum, int ii)
 		CheckQuestItem(pnum);
 		CheckBookLevel(pnum);
 		CheckItemStats(pnum);
-#ifdef HELLFIRE
 		cursor_updated = FALSE;
+#ifdef HELLFIRE
 		if (plr[pnum].HoldItem._itype == ITYPE_GOLD && GoldAutoPlace(pnum))
 			cursor_updated = TRUE;
 #endif
 		dItem[item[ii]._ix][item[ii]._iy] = 0;
-#ifdef HELLFIRE
 		if (currlevel == 21 && item[ii]._ix == CornerStone.x && item[ii]._iy == CornerStone.y) {
 			CornerStone.item.IDidx = -1;
 			CornerStone.item._itype = ITYPE_MISC;
@@ -1837,7 +1784,6 @@ void InvGetItem(int pnum, int ii)
 			CornerStone.item._iIdentified = FALSE;
 			CornerStone.item._iPostDraw = FALSE;
 		}
-#endif
 		i = 0;
 		while (i < numitems) {
 			if (itemactive[i] == ii) {
@@ -1848,9 +1794,7 @@ void InvGetItem(int pnum, int ii)
 			}
 		}
 		pcursitem = -1;
-#ifdef HELLFIRE
 		if (!cursor_updated)
-#endif
 			SetCursor_(plr[pnum].HoldItem._iCurs + CURSOR_FIRSTITEM);
 	}
 }
@@ -1892,11 +1836,9 @@ void AutoGetItem(int pnum, int ii)
 #endif
 	} else {
 		done = FALSE;
-		if (((plr[pnum]._pgfxnum & 0xF) == ANIM_ID_UNARMED || (plr[pnum]._pgfxnum & 0xF) == ANIM_ID_UNARMED_SHIELD
-#ifdef HELLFIRE
-		        || plr[pnum]._pClass == PC_BARD && ((plr[pnum]._pgfxnum & 0xF) == ANIM_ID_MACE || (plr[pnum]._pgfxnum & 0xF) == ANIM_ID_SWORD)
-#endif
-		            )
+		if (((plr[pnum]._pgfxnum & 0xF) == ANIM_ID_UNARMED
+		        || (plr[pnum]._pgfxnum & 0xF) == ANIM_ID_UNARMED_SHIELD
+		        || plr[pnum]._pClass == PC_BARD && ((plr[pnum]._pgfxnum & 0xF) == ANIM_ID_MACE || (plr[pnum]._pgfxnum & 0xF) == ANIM_ID_SWORD))
 		    && plr[pnum]._pmode <= PM_WALK3) {
 			if (plr[pnum].HoldItem._iStatFlag) {
 				if (plr[pnum].HoldItem._iClass == ICLASS_WEAPON) {
@@ -2077,10 +2019,7 @@ void SyncGetItem(int x, int y, int idx, WORD ci, int iseed)
 			if (itemactive[i] == ii) {
 				DeleteItem(itemactive[i], i);
 				FindGetItem(idx, ci, iseed);
-#ifndef HELLFIRE
-				/// ASSERT: assert(FindGetItem(idx,ci,iseed) == -1);
-				FindGetItem(idx, ci, iseed); /* todo: replace with above */
-#endif
+				assert(FindGetItem(idx, ci, iseed) == -1);
 				i = 0;
 			} else {
 				i++;
@@ -2262,12 +2201,7 @@ int InvPutItem(int pnum, int x, int y)
 	return ii;
 }
 
-int SyncPutItem(int pnum, int x, int y, int idx, WORD icreateinfo, int iseed, int Id, int dur, int mdur, int ch, int mch, int ivalue, DWORD ibuff
-#ifdef HELLFIRE
-    ,
-    int to_hit, int max_dam, int min_str, int min_mag, int min_dex, int ac
-#endif
-)
+int SyncPutItem(int pnum, int x, int y, int idx, WORD icreateinfo, int iseed, int Id, int dur, int mdur, int ch, int mch, int ivalue, DWORD ibuff, int to_hit, int max_dam, int min_str, int min_mag, int min_dex, int ac)
 {
 	BOOL done;
 	int d, ii;
@@ -2407,12 +2341,8 @@ char CheckInvHLight()
 		pi = &p->InvBody[rv];
 	} else if (r >= SLOTXY_HAND_RIGHT_FIRST && r <= SLOTXY_HAND_RIGHT_LAST) {
 		pi = &p->InvBody[INVLOC_HAND_LEFT];
-#ifdef HELLFIRE
 		if (pi->_itype == ITYPE_NONE || pi->_iLoc != ILOC_TWOHAND
 		    || (p->_pClass == PC_BARBARIAN && (p->InvBody[INVLOC_HAND_LEFT]._itype == ITYPE_SWORD || p->InvBody[INVLOC_HAND_LEFT]._itype == ITYPE_MACE))) {
-#else
-		if (pi->_itype == ITYPE_NONE || pi->_iLoc != ILOC_TWOHAND) {
-#endif
 			rv = INVLOC_HAND_RIGHT;
 			pi = &p->InvBody[rv];
 		} else {

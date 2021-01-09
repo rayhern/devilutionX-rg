@@ -673,11 +673,10 @@ void AddChestTraps()
 					if (leveltype == DTYPE_CATACOMBS) {
 						object[oi]._oVar4 = random_(0, 2);
 					} else {
-#ifdef HELLFIRE
-						object[oi]._oVar4 = random_(0, 6);
-#else
-						object[oi]._oVar4 = random_(0, 3);
-#endif
+						if (gbIsHellfire)
+							object[oi]._oVar4 = random_(0, 6);
+						else
+							object[oi]._oVar4 = random_(0, 3);
 					}
 				}
 			}
@@ -2434,15 +2433,7 @@ void OperateL1RDoor(int pnum, int oi, bool sendflag)
 		if (!deltaload)
 			PlaySfxLoc(IS_CRCLOS, xp, object[oi]._oy);
 	}
-#ifdef HELLFIRE
-	BOOLEAN dok = dMonster[xp][yp] == 0;
-	dok = dok && dItem[xp][yp] == 0;
-	dok = dok && dDead[xp][yp] == 0;
-	if (dok) {
-#else
-	if (!deltaload)
-		if (((dDead[xp][yp] != 0 ? 0 : 1) & (dMonster[xp][yp] != 0 ? 0 : 1) & (dItem[xp][yp] != 0 ? 0 : 1)) != 0) {
-#endif
+	if (!deltaload && dDead[xp][yp] == 0 && dMonster[xp][yp] == 0 && dItem[xp][yp] == 0) {
 		if (pnum == myplr && sendflag)
 			NetSendCmdParam1(TRUE, CMD_CLOSEDOOR, oi);
 		object[oi]._oVar4 = 0;
@@ -2524,14 +2515,7 @@ void OperateL1LDoor(int pnum, int oi, bool sendflag)
 		if (!deltaload)
 			PlaySfxLoc(IS_CRCLOS, xp, object[oi]._oy);
 	}
-#ifdef HELLFIRE
-	BOOLEAN dok = dMonster[xp][yp] == 0;
-	dok = dok && dItem[xp][yp] == 0;
-	dok = dok && dDead[xp][yp] == 0;
-	if (dok) {
-#else
-	if (((dDead[xp][yp] != 0 ? 0 : 1) & (dMonster[xp][yp] != 0 ? 0 : 1) & (dItem[xp][yp] != 0 ? 0 : 1)) != 0) {
-#endif
+	if (dDead[xp][yp] == 0 && dMonster[xp][yp] == 0 && dItem[xp][yp] == 0) {
 		if (pnum == myplr && sendflag)
 			NetSendCmdParam1(TRUE, CMD_CLOSEDOOR, oi);
 		object[oi]._oVar4 = 0;
@@ -3317,11 +3301,9 @@ void TryDisarm(int pnum, int i)
 					object[i]._oTrapFlag = FALSE;
 				}
 			}
-#ifndef HELLFIRE
 			oti = object[i]._otype;
 			if (oti >= OBJ_TCHEST1 && oti <= OBJ_TCHEST3)
 				object[i]._oTrapFlag = FALSE;
-#endif
 		}
 	}
 }
@@ -3345,7 +3327,7 @@ void OperateShrine(int pnum, int i, int sType)
 	DWORD lv, t;
 	int xx, yy;
 	int v1, v2, v3, v4;
-	unsigned __int64 spell;
+	unsigned __int64 spell, spells;
 
 	if (dropGoldFlag) {
 		dropGoldFlag = FALSE;
@@ -3420,10 +3402,8 @@ void OperateShrine(int pnum, int i, int sType)
 				cnt = 0;
 				for (j = 0; j < NUM_INVLOC; j++) {
 					if (plr[pnum].InvBody[j]._itype != ITYPE_NONE)
-#ifndef HELLFIRE
 						if (plr[pnum].InvBody[j]._iMaxDur != DUR_INDESTRUCTIBLE
 						    && plr[pnum].InvBody[j]._iMaxDur != 0)
-#endif
 							cnt++;
 				}
 				if (cnt == 0)
@@ -3577,14 +3557,15 @@ void OperateShrine(int pnum, int i, int sType)
 		cnt = 0;
 		spell = 1;
 		int maxSpells = gbIsHellfire ? MAX_SPELLS : 37;
+		spells = plr[pnum]._pMemSpells;
 		for (j = 0; j < maxSpells; j++) {
-			if (spell & plr[pnum]._pMemSpells)
+			if (spell & spells)
 				cnt++;
 			spell <<= 1;
 		}
 		if (cnt > 1) {
 			spell = 1;
-			for (j = SPL_FIREBOLT; j <= maxSpells; j++) { // BUGFIX: < MAX_SPELLS, there is no spell with MAX_SPELLS index
+			for (j = SPL_FIREBOLT; j < maxSpells; j++) { // BUGFIX: < MAX_SPELLS, there is no spell with MAX_SPELLS index (fixed)
 				if (plr[pnum]._pMemSpells & spell) {
 					if (plr[pnum]._pSplLvl[j] < MAX_SPELL_LEVEL)
 						plr[pnum]._pSplLvl[j]++;
@@ -3936,7 +3917,6 @@ void OperateShrine(int pnum, int i, int sType)
 			CheckStats(myplr);
 		}
 		break;
-#ifdef HELLFIRE
 	case SHRINE_OILY:
 		if (deltaload)
 			return;
@@ -4105,7 +4085,6 @@ void OperateShrine(int pnum, int i, int sType)
 			TakePlrsMoney(plr[myplr]._pGold / 3);
 		}
 		break;
-#endif
 	}
 
 	CalcPlrInv(pnum, TRUE);
