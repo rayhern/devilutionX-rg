@@ -70,6 +70,7 @@ void selgame_GameSelection_Init()
 	}
 
 	getIniValue("Phone Book", "Entry1", selgame_Ip, 128);
+	getIniValue("Phone Book", "Password1", selgame_Password, 15);
 
 	selgame_FreeVectors();
 
@@ -350,7 +351,7 @@ void selgame_Speed_Select(int value)
 
 void selgame_Password_Init(int value)
 {
-	memset(&selgame_Password, 0, sizeof(selgame_Password));
+	// memset(&selgame_Password, 0, sizeof(selgame_Password));
 
 	selgame_FreeVectors();
 
@@ -384,7 +385,7 @@ void selgame_Password_Init(int value)
 void selgame_Password_Select(int value)
 {
 	if (selgame_selectedGame) {
-		setIniValue("Phone Book", "Entry1", selgame_Ip);
+		
 		if (SNetJoinGame(selgame_selectedGame, selgame_Ip, selgame_Password, NULL, NULL, gdwPlayerId)) {
 			if (!IsDifficultyAllowed(m_client_info->initdata->bDiff)) {
 				selgame_GameSelection_Select(1);

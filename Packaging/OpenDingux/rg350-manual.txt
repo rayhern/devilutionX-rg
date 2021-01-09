@@ -1,10 +1,22 @@
-Copy diabdat.mpq from your CD (or GoG install folder) to:
-/media/home/.local/share/diasurgical/devilution/diabdat.mpq
+Copy all mpqs from your CD (or GoG install folder) to:
+/media/home/.local/share/diasurgical/devilution/
 
-diabdat.mpq filename must be lowercase.
+All mpq filenames must be lowercase.
 
 Game saves and diablo.ini are located at:
 /media/home/.local/share/diasurgical/devilution/
+
+Multiplayer:
+Edit diablo.ini as follows:
+
+[Phone Book]
+Entry1=192.168.0.2
+Password1=bong
+
+Entry1 being the IP/host you want to connect to, and Password1 is the password to use for creating games, or joining them.
+
+- TCP/IP only requires the host to expose port 6112.
+
 
 Controls:
 

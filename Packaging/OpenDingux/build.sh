@@ -56,7 +56,7 @@ prepare_buildroot() {
 
 make_buildroot() {
 	cd "$BUILDROOT"
-	BR2_JLEVEL=0 make toolchain libzip sdl sdl_mixer sdl_ttf
+	BR2_JLEVEL=0 make toolchain libzip sdl sdl_mixer sdl_ttf libsodium
 	cd -
 }
 
@@ -65,7 +65,7 @@ build() {
 	cd "$BUILD_DIR"
 	rm -f CMakeCache.txt
 	cmake .. -DBINARY_RELEASE=ON "-DTARGET_PLATFORM=$TARGET" \
-		-DCMAKE_TOOLCHAIN_FILE="$BUILDROOT/output/host/usr/share/buildroot/toolchainfile.cmake"
+	-DCMAKE_TOOLCHAIN_FILE="$BUILDROOT/output/host/usr/share/buildroot/toolchainfile.cmake"
 	make -j $(getconf _NPROCESSORS_ONLN)
 	cd -
 }
