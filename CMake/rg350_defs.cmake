@@ -1,5 +1,5 @@
 set(sodium_USE_STATIC_LIBS ON)
-set(NONET ON)
+# set(NONET ON)
 set(USE_SDL1 ON)
 set(SDL1_VIDEO_MODE_BPP 16)
 set(PREFILL_PLAYER_NAME ON)
@@ -27,6 +27,9 @@ set(JOY_BUTTON_TRIGGERLEFT 6)
 set(JOY_BUTTON_TRIGGERRIGHT 7)
 set(JOY_BUTTON_START 9)
 set(JOY_BUTTON_BACK 8)
+
+# Enable this when building for Hellfire.
+# set(HELLFIRE ON)
 
 # Map Power button to Esc (Menu in-game / Exit in-menu).
 set(REMAP_KEYBOARD_KEYS "{SDLK_HOME,SDLK_ESCAPE}")
