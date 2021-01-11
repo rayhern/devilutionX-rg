@@ -154,8 +154,8 @@ void mainmenu_loop()
 	getIniValue("Phone Book", "Password1", pass_buffer, 15);
 
 	if (ip_buffer[0] == '\0' && pass_buffer[0] == '\0') {
-		setIniValue("Phone Book", "Entry1", "192.168.0.1");
-		setIniValue("Phone Book", "Password1", "bong");
+		setIniValue("Phone Book", "Entry1", "");
+		setIniValue("Phone Book", "Password1", "default");
 	}
 
 	do {
