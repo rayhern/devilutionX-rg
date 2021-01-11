@@ -72,6 +72,14 @@ void selgame_GameSelection_Init()
 	getIniValue("Phone Book", "Entry1", selgame_Ip, 128);
 	getIniValue("Phone Book", "Password1", selgame_Password, 15);
 
+	// Set default phonebook entry if none exists.
+	if (selgame_Ip[0] == '\0' && selgame_Password[0] == '\0') {
+		setIniValue("Phone Book", "Entry1", (char*)"192.168.0.2");
+		setIniValue("Phone Book", "Password1", (char*)"bong");
+		strcpy(selgame_Ip, "192.168.0.2");
+		strcpy(selgame_Password, "bong");
+	}
+
 	selgame_FreeVectors();
 
 	UiAddBackground(&vecSelGameDialog);
@@ -385,7 +393,7 @@ void selgame_Password_Init(int value)
 void selgame_Password_Select(int value)
 {
 	if (selgame_selectedGame) {
-		
+
 		if (SNetJoinGame(selgame_selectedGame, selgame_Ip, selgame_Password, NULL, NULL, gdwPlayerId)) {
 			if (!IsDifficultyAllowed(m_client_info->initdata->bDiff)) {
 				selgame_GameSelection_Select(1);
