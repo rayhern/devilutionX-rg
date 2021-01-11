@@ -73,11 +73,6 @@ void selgame_GameSelection_Init()
 	getIniValue("Phone Book", "Entry1", selgame_Ip, 128);
 	getIniValue("Phone Book", "Password1", selgame_Password, 15);
 
-	if (selgame_Ip[0] == '\0' && selgame_Password[0] == '\0') {
-		std::strcpy(selgame_Ip, "192.168.0.1");
-		std::strcpy(selgame_Password, "bong");
-	}
-
 	selgame_FreeVectors();
 
 	UiAddBackground(&vecSelGameDialog);

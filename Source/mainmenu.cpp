@@ -147,6 +147,7 @@ void mainmenu_loop()
 	mainmenu_refresh_music();
 	done = FALSE;
 
+	// Check to make sure that we have an entry for multiplayer in our ini phonebook.
 	char ip_buffer[129] = "";
 	char pass_buffer[16] = "";
 	getIniValue("Phone Book", "Entry1", ip_buffer, 128);
