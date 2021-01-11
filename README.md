@@ -10,6 +10,10 @@ Nightly builds | Platform
 
 ![Discord Channel](https://avatars3.githubusercontent.com/u/1965106?s=16&v=4) [Discord Chat Channel](https://discord.gg/YQKCAYQ)
 
+
+This version was made for the RG350/RG351 series devices using the stock firmware on the rg350, and ArkOS for the rg351.
+
+
 # How To Play:
  - Download [the latest DevilutionX release](https://github.com/diasurgical/devilutionX/releases), or build from source
  - Copy diabdat.mpq from your CD or GoG installation (or [extract it from the GoG installer](https://github.com/diasurgical/devilutionX/wiki/Extracting-the-DIABDAT.MPQ-from-the-GoG-installer)) to the DevilutionX install folder or data folder; make sure it is all lowercase. The DevilutionX install folder is the one that contains the DevilutionX executable. The data folder path may differ depending on OS version and security settings, but will normally be as follows:
