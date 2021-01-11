@@ -441,8 +441,7 @@ int UiSelectGame(int a1, _SNETPROGRAMDATA *client_info, _SNETPLAYERDATA *user_in
 		UiPollAndRender();
 	}
 
-	// Save entered ip
-	// -Ray
+	// Save entered ip - Ray
 	setIniValue("Phone Book", "Entry1", selgame_Ip);
 	setIniValue("Phone Book", "Password1", selgame_Password);
 

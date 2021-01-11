@@ -111,6 +111,8 @@ static void print_help_and_exit()
 	printf("    %-20s %-30s\n", "-f", "Display frames per second");
 	printf("    %-20s %-30s\n", "-x", "Run in windowed mode");
 	printf("    %-20s %-30s\n", "--spawn", "Force spawn mode even if diabdat.mpq is found");
+	printf("    %-20s %-30s\n", "--host", "The default host to use when connecting to multiplayer.");
+	printf("    %-20s %-30s\n", "--password", "The default password to use when connecting to multiplayer.");
 #ifdef HELLFIRE
 	printf("\nHellfire options:\n");
 	printf("    %-20s %-30s\n", "--diablo", "Force diablo mode even if hellfire.mpq is found");
@@ -146,6 +148,12 @@ static void diablo_parse_flags(int argc, char **argv)
 	for (int i = 1; i < argc; i++) {
 		if (strcasecmp("-h", argv[i]) == 0 || strcasecmp("--help", argv[i]) == 0) {
 			print_help_and_exit();
+		} else if (strcasecmp("--host", argv[i]) == 0) {
+			char *host = argv[++i];
+			setIniValue("Phone Book", "Entry1", host);
+		} else if (strcasecmp("--password", argv[i]) == 0) {
+			char *pass = argv[++i];
+			setIniValue("Phone Book", "Password1", pass);
 		} else if (strcasecmp("--version", argv[i]) == 0) {
 			printf("%s v%s\n", PROJECT_NAME, PROJECT_VERSION);
 			diablo_quit(0);
