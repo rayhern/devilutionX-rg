@@ -147,6 +147,16 @@ void mainmenu_loop()
 	mainmenu_refresh_music();
 	done = FALSE;
 
+	char ip_buffer[129] = "";
+	char pass_buffer[16] = "";
+	getIniValue("Phone Book", "Entry1", ip_buffer, 128);
+	getIniValue("Phone Book", "Password1", pass_buffer, 15);
+
+	if (ip_buffer[0] == '\0' && pass_buffer[0] == '\0') {
+		setIniValue("Phone Book", "Entry1", "192.168.0.1");
+		setIniValue("Phone Book", "Password1", "bong");
+	}
+
 	do {
 		menu = 0;
 		if (!UiMainMenuDialog(gszProductName, &menu, effects_play_sound, 30))
