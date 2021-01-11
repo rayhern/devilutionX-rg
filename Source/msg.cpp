@@ -394,7 +394,7 @@ static void DeltaImportData(BYTE cmd, DWORD recv_offset)
 		src = DeltaImportObject(src, sgLevels[i].object);
 		DeltaImportMonster(src, sgLevels[i].monster);
 	} else {
-		app_fatal("msg:1");
+		app_fatal("Unkown network message type: %d", cmd);
 	}
 
 	sgbDeltaChunks++;
@@ -1043,6 +1043,12 @@ void NetSendCmdGItem(BOOL bHiPri, BYTE bCmd, BYTE mast, BYTE pnum, BYTE ii)
 		cmd.bCh = item[ii]._iCharges;
 		cmd.bMCh = item[ii]._iMaxCharges;
 		cmd.wValue = item[ii]._ivalue;
+		cmd.wToHit = item[ii]._iPLToHit;
+		cmd.wMaxDam = item[ii]._iMaxDam;
+		cmd.bMinStr = item[ii]._iMinStr;
+		cmd.bMinMag = item[ii]._iMinMag;
+		cmd.bMinDex = item[ii]._iMinDex;
+		cmd.bAC = item[ii]._iAC;
 	}
 
 	if (bHiPri)
