@@ -72,12 +72,9 @@ void selgame_GameSelection_Init()
 	getIniValue("Phone Book", "Entry1", selgame_Ip, 128);
 	getIniValue("Phone Book", "Password1", selgame_Password, 15);
 
-	// Set default phonebook entry if none exists.
 	if (selgame_Ip[0] == '\0' && selgame_Password[0] == '\0') {
-		setIniValue("Phone Book", "Entry1", (char*)"192.168.0.2");
-		setIniValue("Phone Book", "Password1", (char*)"bong");
-		strcpy(selgame_Ip, "192.168.0.2");
-		strcpy(selgame_Password, "bong");
+		std::strcpy(selgame_Ip, "192.168.0.1");
+		std::strcpy(selgame_Password, "bong");
 	}
 
 	selgame_FreeVectors();
@@ -447,6 +444,12 @@ int UiSelectGame(int a1, _SNETPROGRAMDATA *client_info, _SNETPLAYERDATA *user_in
 		UiClearScreen();
 		UiPollAndRender();
 	}
+
+	// Save entered ip
+	// -Ray
+	setIniValue("Phone Book", "Entry1", selgame_Ip);
+	setIniValue("Phone Book", "Password1", selgame_Password);
+
 	selgame_Free();
 
 	return selgame_enteringGame;
