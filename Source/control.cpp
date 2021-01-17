@@ -1345,7 +1345,7 @@ void DrawInfoBox()
 			infoclr = COL_GOLD;
 			strcpy(infostr, plr[pcursplr]._pName);
 			ClearPanel();
-			sprintf(tempstr, "%s, Level : %i", ClassStrTbl[plr[pcursplr]._pClass], plr[pcursplr]._pLevel);
+			sprintf(tempstr, "%s, Level : %i", ClassStrTblOld[plr[pcursplr]._pClass], plr[pcursplr]._pLevel);
 			AddPanelString(tempstr, TRUE);
 			sprintf(tempstr, "Hit Points %i of %i", plr[pcursplr]._pHitPoints >> 6, plr[pcursplr]._pMaxHP >> 6);
 			AddPanelString(tempstr, TRUE);
@@ -1421,7 +1421,7 @@ void DrawChr()
 	CelDraw(SCREEN_X, 351 + SCREEN_Y, pChrPanel, 1, SPANEL_WIDTH);
 	ADD_PlrStringXY(20, 32, 151, plr[myplr]._pName, COL_WHITE);
 
-	ADD_PlrStringXY(168, 32, 299, ClassStrTbl[plr[myplr]._pClass], COL_WHITE);
+	ADD_PlrStringXY(168, 32, 299, ClassStrTblOld[plr[myplr]._pClass], COL_WHITE);
 
 	sprintf(chrstr, "%i", plr[myplr]._pLevel);
 	ADD_PlrStringXY(66, 69, 109, chrstr, COL_WHITE);
@@ -1886,6 +1886,14 @@ void DrawSpellBook()
 	if (gbIsHellfire && sbooktab < 5)
 		CelDraw(RIGHT_PANEL_X + 61 * sbooktab + 7, 348 + SCREEN_Y, pSBkBtnCel, sbooktab + 1, 61);
 	else if (gbIsHellfire && sbooktab < 4)
+		// BUGFIX: rendering of page 3 and page 4 buttons are both off-by-one pixel.
+		// The fix would look as follows:
+		//
+		//    int sx = RIGHT_PANEL_X + 76 * sbooktab + 7;
+		//    if (sbooktab == 2 || sbooktab == 3) {
+		//       sx++;
+		//    }
+		//    CelDraw(sx, 348 + SCREEN_Y, pSBkBtnCel, sbooktab + 1, 76);
 		CelDraw(RIGHT_PANEL_X + 76 * sbooktab + 7, 348 + SCREEN_Y, pSBkBtnCel, sbooktab + 1, 76);
 
 	spl = plr[myplr]._pMemSpells | plr[myplr]._pISpells | plr[myplr]._pAblSpells;
